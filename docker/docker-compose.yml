@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: gkfitsystem_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: gkfitsystem
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - gkfitsystem_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  gkfitsystem_postgres_data:
