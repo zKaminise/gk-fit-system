@@ -1,4 +1,4 @@
-# KaminFit — Week 1 Project Foundation
+# GKFitSystem — Week 1 Project Foundation
 
 > **Version:** 1.0  
 > **Date:** March 2026  
@@ -8,15 +8,15 @@
 
 ## 1. Product Vision
 
-### What is KaminFit?
+### What is GKFitSystem?
 
-KaminFit is a multi-tenant SaaS platform purpose-built for managing gyms, swimming schools, hydro gymnastics centers, and mixed sports academies. It provides academy owners and their staff with a unified system to handle student enrollment, class scheduling, financial management, attendance tracking, and student progress — all under a single subscription with full data isolation per academy.
+GKFitSystem is a multi-tenant SaaS platform purpose-built for managing gyms, swimming schools, hydro gymnastics centers, and mixed sports academies. It provides academy owners and their staff with a unified system to handle student enrollment, class scheduling, financial management, attendance tracking, and student progress — all under a single subscription with full data isolation per academy.
 
 ### What problem does it solve?
 
 Small and mid-sized sports academies — particularly swimming schools and mixed-modality centers — operate with fragmented workflows. They juggle paper attendance sheets, WhatsApp groups for parent communication, spreadsheets for financial control, and ad-hoc scheduling systems. This leads to missed payments, disorganized classes, no visibility into student progress, and heavy administrative overhead.
 
-KaminFit replaces these fragmented tools with a single integrated platform designed specifically for the operational reality of these academies: children who don't have CPFs, guardians managing multiple enrollments, teachers tracking progress across learning levels, and front desk staff handling check-ins and payments.
+GKFitSystem replaces these fragmented tools with a single integrated platform designed specifically for the operational reality of these academies: children who don't have CPFs, guardians managing multiple enrollments, teachers tracking progress across learning levels, and front desk staff handling check-ins and payments.
 
 ### Who are the target users?
 
@@ -83,7 +83,7 @@ Brazil has thousands of swimming schools and small sports academies. Most manage
 
 Scope: Global (cross-tenant).
 
-The superadmin of the KaminFit platform itself. Can create and manage tenant accounts, view platform-wide metrics, impersonate tenant admins for support purposes, and manage platform billing. This role is internal to the KaminFit team and is never exposed to academy customers.
+The superadmin of the GKFitSystem platform itself. Can create and manage tenant accounts, view platform-wide metrics, impersonate tenant admins for support purposes, and manage platform billing. This role is internal to the GKFitSystem team and is never exposed to academy customers.
 
 ### TENANT_ADMIN
 
@@ -292,7 +292,7 @@ Aggregated views and metrics for academy management. TENANT_ADMINs see: total ac
 
 ### What multi-tenant architecture means here
 
-KaminFit uses logical multi-tenancy with a shared database. All tenants (academies) share the same PostgreSQL database hosted on Supabase, but every table that holds tenant-specific data includes a `tenant_id` column. This column is the partition key that ensures each academy only ever sees its own data. There is no separate database per tenant — isolation is enforced at the application layer through query filtering and middleware.
+GKFitSystem uses logical multi-tenancy with a shared database. All tenants (academies) share the same PostgreSQL database hosted on Supabase, but every table that holds tenant-specific data includes a `tenant_id` column. This column is the partition key that ensures each academy only ever sees its own data. There is no separate database per tenant — isolation is enforced at the application layer through query filtering and middleware.
 
 ### How tenant isolation works
 
@@ -319,7 +319,7 @@ The system uses Role-Based Access Control (RBAC). Each user has exactly one role
 ## 8. Suggested Project Structure
 
 ```
-kaminfit/
+GKFitSystem/
 │
 ├── backend/                        # NestJS application
 │   ├── src/
@@ -660,4 +660,4 @@ Items are organized by module and roughly ordered by dependency. Complexity: **S
 
 ---
 
-*This document serves as the complete Week 1 foundation for KaminFit. It should be reviewed, refined, and updated as development progresses. All architectural decisions documented here are starting points — they should evolve based on real implementation experience.*
+*This document serves as the complete Week 1 foundation for GKFitSystem. It should be reviewed, refined, and updated as development progresses. All architectural decisions documented here are starting points — they should evolve based on real implementation experience.*
