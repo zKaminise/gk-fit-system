@@ -29,8 +29,11 @@ model Tenant {
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz()
 
-  users   User[]
-  persons Person[]
+  users                User[]
+  persons              Person[]
+  students             Student[]
+  guardians            Guardian[]
+  guardianStudentLinks GuardianStudentLink[]
 
   @@map("tenants")
 }
@@ -85,11 +88,86 @@ model Person {
   createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  users  User[]
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  users     User[]
+  students  Student[]
+  guardians Guardian[]
 
   @@index([tenantId])
   @@index([tenantId, cpf])
   @@index([tenantId, fullName])
   @@map("persons")
+}
+
+// =========================
+// STUDENT (Aluno)
+// =========================
+model Student {
+  id               String    @id @default(uuid()) @db.Uuid
+  tenantId         String    @map("tenant_id") @db.Uuid
+  personId         String    @map("person_id") @db.Uuid
+  registrationCode String?   @map("registration_code") @db.VarChar(50)
+  status           String    @default("active") @db.VarChar(20)
+  notes            String?
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant               Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person               Person                @relation(fields: [personId], references: [id], onDelete: Cascade)
+  guardianStudentLinks GuardianStudentLink[]
+
+  @@unique([tenantId, personId])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, registrationCode])
+  @@map("students")
+}
+
+// =========================
+// GUARDIAN (Responsável)
+// =========================
+model Guardian {
+  id                    String    @id @default(uuid()) @db.Uuid
+  tenantId              String    @map("tenant_id") @db.Uuid
+  personId              String    @map("person_id") @db.Uuid
+  isFinancialResponsible Boolean   @default(false) @map("is_financial_responsible")
+  notes                 String?
+  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant               Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person               Person                @relation(fields: [personId], references: [id], onDelete: Cascade)
+  guardianStudentLinks GuardianStudentLink[]
+
+  @@unique([tenantId, personId])
+  @@index([tenantId])
+  @@index([tenantId, isFinancialResponsible])
+  @@map("guardians")
+}
+
+// =========================
+// GUARDIAN-STUDENT-LINK (Vínculo)
+// =========================
+model GuardianStudentLink {
+  id                     String   @id @default(uuid()) @db.Uuid
+  tenantId               String   @map("tenant_id") @db.Uuid
+  guardianId             String   @map("guardian_id") @db.Uuid
+  studentId              String   @map("student_id") @db.Uuid
+  relationshipType       String   @map("relationship_type") @db.VarChar(30)
+  isPrimaryContact       Boolean  @default(false) @map("is_primary_contact")
+  isFinancialResponsible Boolean  @default(false) @map("is_financial_responsible")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  guardian Guardian @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+  student  Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, guardianId, studentId])
+  @@index([tenantId])
+  @@index([guardianId])
+  @@index([studentId])
+  @@index([tenantId, isPrimaryContact])
+  @@index([tenantId, isFinancialResponsible])
+  @@map("guardian_student_links")
 }
