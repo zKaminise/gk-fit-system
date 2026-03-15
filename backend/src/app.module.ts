@@ -10,6 +10,9 @@ import { PersonModule } from './modules/person/person.module';
 import { StudentModule } from './modules/student/student.module';
 import { GuardianModule } from './modules/guardian/guardian.module';
 import { GuardianStudentLinkModule } from './modules/guardian-student-link/guardian-student-link.module';
+import { ModalityModule } from './modules/modality/modality.module';
+import { LevelModule } from './modules/level/level.module';
+import { ClassGroupModule } from './modules/class-group/class-group.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -25,6 +28,9 @@ import { RolesGuard } from './common/guards/roles.guard';
     StudentModule,
     GuardianModule,
     GuardianStudentLinkModule,
+    ModalityModule,
+    LevelModule,
+    ClassGroupModule,
   ],
   providers: [
     {

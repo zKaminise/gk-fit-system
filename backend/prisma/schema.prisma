@@ -34,6 +34,9 @@ model Tenant {
   students             Student[]
   guardians            Guardian[]
   guardianStudentLinks GuardianStudentLink[]
+  modalities           Modality[]
+  levels               Level[]
+  classGroups          ClassGroup[]
 
   @@map("tenants")
 }
@@ -55,6 +58,8 @@ model User {
 
   tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   person Person? @relation(fields: [personId], references: [id], onDelete: SetNull)
+
+  classGroupsAsTeacher ClassGroup[]
 
   @@index([tenantId])
   @@index([tenantId, role])
@@ -170,4 +175,74 @@ model GuardianStudentLink {
   @@index([tenantId, isPrimaryContact])
   @@index([tenantId, isFinancialResponsible])
   @@map("guardian_student_links")
+}
+
+model Modality {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?
+  isActive    Boolean  @default(true) @map("is_active")
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  levels      Level[]
+  classGroups ClassGroup[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@map("modalities")
+}
+
+model Level {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  modalityId  String   @map("modality_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  description String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  color       String?  @db.VarChar(7)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  modality    Modality     @relation(fields: [modalityId], references: [id], onDelete: Cascade)
+  classGroups ClassGroup[]
+
+  @@unique([tenantId, modalityId, name])
+  @@index([tenantId])
+  @@index([tenantId, modalityId])
+  @@index([tenantId, isActive])
+  @@map("levels")
+}
+
+model ClassGroup {
+  id          String   @id @default(uuid()) @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  modalityId  String   @map("modality_id") @db.Uuid
+  levelId     String?  @map("level_id") @db.Uuid
+  teacherId   String?  @map("teacher_id") @db.Uuid
+  name        String   @db.VarChar(150)
+  daysOfWeek  String   @map("days_of_week") @db.VarChar(30)
+  startTime   String   @map("start_time") @db.VarChar(5)
+  endTime     String   @map("end_time") @db.VarChar(5)
+  location    String?  @db.VarChar(100)
+  maxCapacity Int      @default(20) @map("max_capacity")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  modality Modality  @relation(fields: [modalityId], references: [id], onDelete: Cascade)
+  level    Level?    @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  teacher  User?     @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([tenantId, modalityId])
+  @@index([tenantId, isActive])
+  @@index([teacherId])
+  @@map("class_groups")
 }

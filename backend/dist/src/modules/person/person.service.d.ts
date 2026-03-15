@@ -6,14 +6,8 @@ export declare class PersonService {
     constructor(prisma: PrismaService);
     create(tenantId: string, dto: CreatePersonDto): Promise<{
         id: string;
-        fullName: string;
-        birthDate: Date | null;
-        cpf: string | null;
-        rg: string | null;
-        gender: string | null;
         email: string | null;
         phone: string | null;
-        phoneSecondary: string | null;
         addressStreet: string | null;
         addressNumber: string | null;
         addressComplement: string | null;
@@ -21,12 +15,18 @@ export declare class PersonService {
         addressCity: string | null;
         addressState: string | null;
         addressZip: string | null;
-        medicalNotes: string | null;
-        photoUrl: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
+        fullName: string;
+        birthDate: Date | null;
+        cpf: string | null;
+        rg: string | null;
+        gender: string | null;
+        phoneSecondary: string | null;
+        medicalNotes: string | null;
+        photoUrl: string | null;
     }>;
     findAll(tenantId: string, search?: string): Promise<({
         students: {
@@ -39,14 +39,8 @@ export declare class PersonService {
         }[];
     } & {
         id: string;
-        fullName: string;
-        birthDate: Date | null;
-        cpf: string | null;
-        rg: string | null;
-        gender: string | null;
         email: string | null;
         phone: string | null;
-        phoneSecondary: string | null;
         addressStreet: string | null;
         addressNumber: string | null;
         addressComplement: string | null;
@@ -54,12 +48,18 @@ export declare class PersonService {
         addressCity: string | null;
         addressState: string | null;
         addressZip: string | null;
-        medicalNotes: string | null;
-        photoUrl: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
+        fullName: string;
+        birthDate: Date | null;
+        cpf: string | null;
+        rg: string | null;
+        gender: string | null;
+        phoneSecondary: string | null;
+        medicalNotes: string | null;
+        photoUrl: string | null;
     })[]>;
     findById(tenantId: string, id: string): Promise<{
         users: {
@@ -79,14 +79,8 @@ export declare class PersonService {
         }[];
     } & {
         id: string;
-        fullName: string;
-        birthDate: Date | null;
-        cpf: string | null;
-        rg: string | null;
-        gender: string | null;
         email: string | null;
         phone: string | null;
-        phoneSecondary: string | null;
         addressStreet: string | null;
         addressNumber: string | null;
         addressComplement: string | null;
@@ -94,23 +88,23 @@ export declare class PersonService {
         addressCity: string | null;
         addressState: string | null;
         addressZip: string | null;
-        medicalNotes: string | null;
-        photoUrl: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
+        fullName: string;
+        birthDate: Date | null;
+        cpf: string | null;
+        rg: string | null;
+        gender: string | null;
+        phoneSecondary: string | null;
+        medicalNotes: string | null;
+        photoUrl: string | null;
     }>;
     update(tenantId: string, id: string, dto: UpdatePersonDto): Promise<{
         id: string;
-        fullName: string;
-        birthDate: Date | null;
-        cpf: string | null;
-        rg: string | null;
-        gender: string | null;
         email: string | null;
         phone: string | null;
-        phoneSecondary: string | null;
         addressStreet: string | null;
         addressNumber: string | null;
         addressComplement: string | null;
@@ -118,16 +112,22 @@ export declare class PersonService {
         addressCity: string | null;
         addressState: string | null;
         addressZip: string | null;
-        medicalNotes: string | null;
-        photoUrl: string | null;
         isActive: boolean;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
+        fullName: string;
+        birthDate: Date | null;
+        cpf: string | null;
+        rg: string | null;
+        gender: string | null;
+        phoneSecondary: string | null;
+        medicalNotes: string | null;
+        photoUrl: string | null;
     }>;
     deactivate(tenantId: string, id: string): Promise<{
         id: string;
-        fullName: string;
         isActive: boolean;
+        fullName: string;
     }>;
 }

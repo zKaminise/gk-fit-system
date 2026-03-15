@@ -19,6 +19,9 @@ const person_module_1 = require("./modules/person/person.module");
 const student_module_1 = require("./modules/student/student.module");
 const guardian_module_1 = require("./modules/guardian/guardian.module");
 const guardian_student_link_module_1 = require("./modules/guardian-student-link/guardian-student-link.module");
+const modality_module_1 = require("./modules/modality/modality.module");
+const level_module_1 = require("./modules/level/level.module");
+const class_group_module_1 = require("./modules/class-group/class-group.module");
 const jwt_auth_guard_1 = require("./common/guards/jwt-auth.guard");
 const roles_guard_1 = require("./common/guards/roles.guard");
 let AppModule = class AppModule {
@@ -37,6 +40,9 @@ exports.AppModule = AppModule = __decorate([
             student_module_1.StudentModule,
             guardian_module_1.GuardianModule,
             guardian_student_link_module_1.GuardianStudentLinkModule,
+            modality_module_1.ModalityModule,
+            level_module_1.LevelModule,
+            class_group_module_1.ClassGroupModule,
         ],
         providers: [
             {
