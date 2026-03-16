@@ -40,6 +40,8 @@ model Tenant {
   plans                 Plan[]
   enrollments           Enrollment[]
   enrollmentClassGroups EnrollmentClassGroup[]
+  charges               Charge[]
+  payments              Payment[]
 
   @@map("tenants")
 }
@@ -63,6 +65,7 @@ model User {
   person Person? @relation(fields: [personId], references: [id], onDelete: SetNull)
 
   classGroupsAsTeacher ClassGroup[]
+  paymentsReceived     Payment[]
 
   @@index([tenantId])
   @@index([tenantId, role])
@@ -96,10 +99,12 @@ model Person {
   createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
 
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  users     User[]
-  students  Student[]
-  guardians Guardian[]
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  users          User[]
+  students       Student[]
+  guardians      Guardian[]
+  chargesAsPayer Charge[]
 
   @@index([tenantId])
   @@index([tenantId, cpf])
@@ -298,10 +303,12 @@ model Enrollment {
   createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
 
-  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  student     Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  plan        Plan                   @relation(fields: [planId], references: [id], onDelete: Restrict)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  plan    Plan    @relation(fields: [planId], references: [id], onDelete: Restrict)
+
   classGroups EnrollmentClassGroup[]
+  charges     Charge[]
 
   @@index([tenantId])
   @@index([tenantId, studentId])
@@ -326,7 +333,64 @@ model EnrollmentClassGroup {
 
   @@unique([tenantId, enrollmentId, classGroupId])
   @@index([tenantId])
-  @@index([enrollmentId])
-  @@index([classGroupId])
+  @@index([tenantId, enrollmentId])
+  @@index([tenantId, classGroupId])
   @@map("enrollment_class_groups")
+}
+
+// =========================
+// CHARGE (Cobrança)
+// =========================
+model Charge {
+  id              String   @id @default(uuid()) @db.Uuid
+  tenantId        String   @map("tenant_id") @db.Uuid
+  enrollmentId    String   @map("enrollment_id") @db.Uuid
+  payerPersonId   String?  @map("payer_person_id") @db.Uuid
+  description     String?
+  amountCents     Int      @map("amount_cents")
+  paidAmountCents Int      @default(0) @map("paid_amount_cents")
+  dueDate         DateTime @map("due_date") @db.Date
+  status          String   @default("pending") @db.VarChar(20)
+  referenceMonth  String?  @map("reference_month") @db.VarChar(7)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  enrollment  Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  payerPerson Person?    @relation(fields: [payerPersonId], references: [id], onDelete: SetNull)
+  payments    Payment[]
+
+  @@index([tenantId])
+  @@index([tenantId, enrollmentId])
+  @@index([tenantId, status])
+  @@index([tenantId, dueDate])
+  @@index([tenantId, payerPersonId])
+  @@map("charges")
+}
+
+// =========================
+// PAYMENT (Pagamento)
+// =========================
+model Payment {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  chargeId         String   @map("charge_id") @db.Uuid
+  receivedByUserId String   @map("received_by_user_id") @db.Uuid
+  amountCents      Int      @map("amount_cents")
+  paymentDate      DateTime @map("payment_date") @db.Date
+  paymentMethod    String   @map("payment_method") @db.VarChar(30)
+  notes            String?
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant         Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  charge         Charge @relation(fields: [chargeId], references: [id], onDelete: Cascade)
+  receivedByUser User @relation(fields: [receivedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId])
+  @@index([tenantId, chargeId])
+  @@index([tenantId, paymentDate])
+  @@index([tenantId, paymentMethod])
+  @@index([tenantId, receivedByUserId])
+  @@map("payments")
 }
