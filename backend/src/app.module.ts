@@ -13,6 +13,9 @@ import { GuardianStudentLinkModule } from './modules/guardian-student-link/guard
 import { ModalityModule } from './modules/modality/modality.module';
 import { LevelModule } from './modules/level/level.module';
 import { ClassGroupModule } from './modules/class-group/class-group.module';
+import { PlanModule } from './modules/plan/plan.module';
+import { EnrollmentModule } from './modules/enrollment/enrollment.module';
+import { EnrollmentClassGroupModule } from './modules/enrollment-class-group/enrollment-class-group.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -31,6 +34,9 @@ import { RolesGuard } from './common/guards/roles.guard';
     ModalityModule,
     LevelModule,
     ClassGroupModule,
+    PlanModule,
+    EnrollmentModule,
+    EnrollmentClassGroupModule,
   ],
   providers: [
     {

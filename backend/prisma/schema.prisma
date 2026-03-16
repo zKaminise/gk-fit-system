@@ -29,14 +29,17 @@ model Tenant {
   createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt           DateTime @updatedAt @map("updated_at") @db.Timestamptz()
 
-  users                User[]
-  persons              Person[]
-  students             Student[]
-  guardians            Guardian[]
-  guardianStudentLinks GuardianStudentLink[]
-  modalities           Modality[]
-  levels               Level[]
-  classGroups          ClassGroup[]
+  users                 User[]
+  persons               Person[]
+  students              Student[]
+  guardians             Guardian[]
+  guardianStudentLinks  GuardianStudentLink[]
+  modalities            Modality[]
+  levels                Level[]
+  classGroups           ClassGroup[]
+  plans                 Plan[]
+  enrollments           Enrollment[]
+  enrollmentClassGroups EnrollmentClassGroup[]
 
   @@map("tenants")
 }
@@ -108,18 +111,20 @@ model Person {
 // STUDENT (Aluno)
 // =========================
 model Student {
-  id               String    @id @default(uuid()) @db.Uuid
-  tenantId         String    @map("tenant_id") @db.Uuid
-  personId         String    @map("person_id") @db.Uuid
-  registrationCode String?   @map("registration_code") @db.VarChar(50)
-  status           String    @default("active") @db.VarChar(20)
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  personId         String   @map("person_id") @db.Uuid
+  registrationCode String?  @map("registration_code") @db.VarChar(50)
+  status           String   @default("active") @db.VarChar(20)
   notes            String?
-  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt        DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz()
 
-  tenant               Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  person               Person                @relation(fields: [personId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
   guardianStudentLinks GuardianStudentLink[]
+  enrollments          Enrollment[]
 
   @@unique([tenantId, personId])
   @@index([tenantId])
@@ -132,13 +137,13 @@ model Student {
 // GUARDIAN (Responsável)
 // =========================
 model Guardian {
-  id                    String    @id @default(uuid()) @db.Uuid
-  tenantId              String    @map("tenant_id") @db.Uuid
-  personId              String    @map("person_id") @db.Uuid
-  isFinancialResponsible Boolean   @default(false) @map("is_financial_responsible")
-  notes                 String?
-  createdAt             DateTime  @default(now()) @map("created_at") @db.Timestamptz()
-  updatedAt             DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+  id                     String   @id @default(uuid()) @db.Uuid
+  tenantId               String   @map("tenant_id") @db.Uuid
+  personId               String   @map("person_id") @db.Uuid
+  isFinancialResponsible Boolean  @default(false) @map("is_financial_responsible")
+  notes                  String?
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt              DateTime @updatedAt @map("updated_at") @db.Timestamptz()
 
   tenant               Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   person               Person                @relation(fields: [personId], references: [id], onDelete: Cascade)
@@ -235,14 +240,93 @@ model ClassGroup {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz()
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz()
 
-  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  modality Modality  @relation(fields: [modalityId], references: [id], onDelete: Cascade)
-  level    Level?    @relation(fields: [levelId], references: [id], onDelete: SetNull)
-  teacher  User?     @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  modality Modality @relation(fields: [modalityId], references: [id], onDelete: Cascade)
+  level    Level?   @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  teacher  User?    @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+
+  enrollmentClassGroups EnrollmentClassGroup[]
 
   @@index([tenantId])
   @@index([tenantId, modalityId])
   @@index([tenantId, isActive])
-  @@index([teacherId])
+  @@index([tenantId, teacherId])
   @@map("class_groups")
+}
+
+// =========================
+// PLAN (Plano Comercial)
+// =========================
+model Plan {
+  id                 String   @id @default(uuid()) @db.Uuid
+  tenantId           String   @map("tenant_id") @db.Uuid
+  name               String   @db.VarChar(150)
+  description        String?
+  priceCents         Int      @map("price_cents")
+  billingFrequency   String   @default("monthly") @map("billing_frequency") @db.VarChar(20)
+  durationMonths     Int?     @map("duration_months")
+  enrollmentFeeCents Int      @default(0) @map("enrollment_fee_cents")
+  allowsPause        Boolean  @default(false) @map("allows_pause")
+  maxPauseDays       Int?     @map("max_pause_days")
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  enrollments Enrollment[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+  @@index([tenantId, isActive])
+  @@map("plans")
+}
+
+// =========================
+// ENROLLMENT (Matrícula)
+// =========================
+model Enrollment {
+  id                 String    @id @default(uuid()) @db.Uuid
+  tenantId           String    @map("tenant_id") @db.Uuid
+  studentId          String    @map("student_id") @db.Uuid
+  planId             String    @map("plan_id") @db.Uuid
+  status             String    @default("active") @db.VarChar(20)
+  startDate          DateTime  @map("start_date") @db.Date
+  endDate            DateTime? @map("end_date") @db.Date
+  cancellationDate   DateTime? @map("cancellation_date") @db.Date
+  cancellationReason String?   @map("cancellation_reason")
+  notes              String?
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt          DateTime  @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  student     Student                @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  plan        Plan                   @relation(fields: [planId], references: [id], onDelete: Restrict)
+  classGroups EnrollmentClassGroup[]
+
+  @@index([tenantId])
+  @@index([tenantId, studentId])
+  @@index([tenantId, status])
+  @@index([tenantId, planId])
+  @@map("enrollments")
+}
+
+// =========================
+// ENROLLMENT_CLASS_GROUP (Turmas da Matrícula)
+// =========================
+model EnrollmentClassGroup {
+  id           String   @id @default(uuid()) @db.Uuid
+  tenantId     String   @map("tenant_id") @db.Uuid
+  enrollmentId String   @map("enrollment_id") @db.Uuid
+  classGroupId String   @map("class_group_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  classGroup ClassGroup @relation(fields: [classGroupId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, enrollmentId, classGroupId])
+  @@index([tenantId])
+  @@index([enrollmentId])
+  @@index([classGroupId])
+  @@map("enrollment_class_groups")
 }

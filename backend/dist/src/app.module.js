@@ -22,6 +22,9 @@ const guardian_student_link_module_1 = require("./modules/guardian-student-link/
 const modality_module_1 = require("./modules/modality/modality.module");
 const level_module_1 = require("./modules/level/level.module");
 const class_group_module_1 = require("./modules/class-group/class-group.module");
+const plan_module_1 = require("./modules/plan/plan.module");
+const enrollment_module_1 = require("./modules/enrollment/enrollment.module");
+const enrollment_class_group_module_1 = require("./modules/enrollment-class-group/enrollment-class-group.module");
 const jwt_auth_guard_1 = require("./common/guards/jwt-auth.guard");
 const roles_guard_1 = require("./common/guards/roles.guard");
 let AppModule = class AppModule {
@@ -43,6 +46,9 @@ exports.AppModule = AppModule = __decorate([
             modality_module_1.ModalityModule,
             level_module_1.LevelModule,
             class_group_module_1.ClassGroupModule,
+            plan_module_1.PlanModule,
+            enrollment_module_1.EnrollmentModule,
+            enrollment_class_group_module_1.EnrollmentClassGroupModule,
         ],
         providers: [
             {
