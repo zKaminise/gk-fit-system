@@ -18,6 +18,7 @@ import { EnrollmentModule } from './modules/enrollment/enrollment.module';
 import { EnrollmentClassGroupModule } from './modules/enrollment-class-group/enrollment-class-group.module';
 import { ChargeModule } from './modules/charge/charge.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { AttendanceModule } from './modules/attendance/attendance.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 
@@ -41,6 +42,7 @@ import { RolesGuard } from './common/guards/roles.guard';
     EnrollmentClassGroupModule,
     ChargeModule,
     PaymentModule,
+    AttendanceModule,
   ],
   providers: [
     {

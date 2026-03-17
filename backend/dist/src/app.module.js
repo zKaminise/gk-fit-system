@@ -27,6 +27,7 @@ const enrollment_module_1 = require("./modules/enrollment/enrollment.module");
 const enrollment_class_group_module_1 = require("./modules/enrollment-class-group/enrollment-class-group.module");
 const charge_module_1 = require("./modules/charge/charge.module");
 const payment_module_1 = require("./modules/payment/payment.module");
+const attendance_module_1 = require("./modules/attendance/attendance.module");
 const jwt_auth_guard_1 = require("./common/guards/jwt-auth.guard");
 const roles_guard_1 = require("./common/guards/roles.guard");
 let AppModule = class AppModule {
@@ -53,6 +54,7 @@ exports.AppModule = AppModule = __decorate([
             enrollment_class_group_module_1.EnrollmentClassGroupModule,
             charge_module_1.ChargeModule,
             payment_module_1.PaymentModule,
+            attendance_module_1.AttendanceModule,
         ],
         providers: [
             {

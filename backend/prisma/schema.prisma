@@ -42,6 +42,7 @@ model Tenant {
   enrollmentClassGroups EnrollmentClassGroup[]
   charges               Charge[]
   payments              Payment[]
+  attendances           Attendance[]
 
   @@map("tenants")
 }
@@ -66,6 +67,7 @@ model User {
 
   classGroupsAsTeacher ClassGroup[]
   paymentsReceived     Payment[]
+  attendancesRecorded  Attendance[]
 
   @@index([tenantId])
   @@index([tenantId, role])
@@ -130,6 +132,7 @@ model Student {
 
   guardianStudentLinks GuardianStudentLink[]
   enrollments          Enrollment[]
+  attendances          Attendance[]
 
   @@unique([tenantId, personId])
   @@index([tenantId])
@@ -251,6 +254,7 @@ model ClassGroup {
   teacher  User?    @relation(fields: [teacherId], references: [id], onDelete: SetNull)
 
   enrollmentClassGroups EnrollmentClassGroup[]
+  attendances           Attendance[]
 
   @@index([tenantId])
   @@index([tenantId, modalityId])
@@ -393,4 +397,32 @@ model Payment {
   @@index([tenantId, paymentMethod])
   @@index([tenantId, receivedByUserId])
   @@map("payments")
+}
+
+// =========================
+// ATTENDANCE (Presença)
+// =========================
+model Attendance {
+  id               String   @id @default(uuid()) @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  classGroupId     String   @map("class_group_id") @db.Uuid
+  studentId        String   @map("student_id") @db.Uuid
+  attendanceDate   DateTime @map("attendance_date") @db.Date
+  status           String   @db.VarChar(20)
+  recordedByUserId String?  @map("recorded_by_user_id") @db.Uuid
+  notes            String?  @db.VarChar(255)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  classGroup ClassGroup @relation(fields: [classGroupId], references: [id], onDelete: Cascade)
+  student    Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  recordedBy User?      @relation(fields: [recordedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, classGroupId, studentId, attendanceDate])
+  @@index([tenantId])
+  @@index([tenantId, classGroupId, attendanceDate])
+  @@index([tenantId, studentId])
+  @@index([tenantId, classGroupId])
+  @@map("attendances")
 }
